@@ -13,7 +13,10 @@ let favoriteMovies = JSON.parse(localStorage.getItem('favorites')) || [];
 // Fetch and display popular movies
 async function fetchPopularMovies() {
     try {
-        const response = await fetch(`${apiUrl}/movie/popular?api_key=${apiKey}`);
+        const response = await fetch(`${apiUrl}/movie/popular?api_key=${apiKey}&language=es-MX&page=1`);
+        if (!response.ok) {
+            throw new Error('Error fetching popular movies');
+        }
         const data = await response.json();
         displayMovies(data.results);
     } catch (error) {
@@ -38,14 +41,17 @@ function displayMovies(movies) {
 // Show movie details
 async function showMovieDetails(movieId) {
     try {
-        const response = await fetch(`${apiUrl}/movie/${movieId}?api_key=${apiKey}`);
+        const response = await fetch(`${apiUrl}/movie/${movieId}?api_key=${apiKey}&language=es-MX`);
+        if (!response.ok) {
+            throw new Error('Error fetching movie details');
+        }
         const movie = await response.json();
-        selectedMovieId = movie.id; // Guardamos el ID de la película seleccionada
         detailsContainer.innerHTML = `
             <h3>${movie.title}</h3>
             <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
             <p>${movie.overview}</p>
         `;
+        selectedMovieId = movie.id; // Guardamos el ID de la película seleccionada
         movieDetails.classList.remove('hidden'); // Muestra los detalles de la película
     } catch (error) {
         console.error('Error fetching movie details:', error);
@@ -57,7 +63,10 @@ searchButton.addEventListener('click', async () => {
     const query = searchInput.value;
     if (query) {
         try {
-            const response = await fetch(`${apiUrl}/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}`);
+            const response = await fetch(`${apiUrl}/search/movie?api_key=${apiKey}&language=es-MX&query=${encodeURIComponent(query)}`);
+            if (!response.ok) {
+                throw new Error('Error searching movies');
+                }
             const data = await response.json();
             displayMovies(data.results);
         } catch (error) {
